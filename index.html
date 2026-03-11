@@ -489,6 +489,7 @@
     cursor: pointer;
     transition: border-color 0.15s, background 0.15s;
     position: relative;
+    z-index: 1;
   }
   .forecast-month:hover { border-color: var(--accent); }
 
@@ -502,7 +503,15 @@
     background: rgba(91,127,255,0.08);
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    border-bottom-color: transparent;
+    border-bottom: none;
+    z-index: 3;
+    /* extend background down to cover the seam */
+    margin-bottom: 0;
+    padding-bottom: 12px;
+  }
+  /* All other boxes slide behind the detail panel */
+  .forecast-grid:has(.expanded) .forecast-month:not(.expanded) {
+    z-index: 0;
   }
 
   .forecast-month-label {
@@ -556,17 +565,17 @@
   .forecast-detail {
     display: none;
     background: var(--surface2);
-    border: 1px solid transparent;
-    border-top: none;
+    border: 1px solid var(--accent);
+    border-top: 2px solid var(--accent);
     border-radius: 0 0 10px 10px;
     overflow: hidden;
     grid-column: 1 / -1;
-    margin-top: -1px;
+    position: relative;
+    z-index: 2;
+    margin-top: -2px; /* tuck under expanded box, hide its missing bottom border seam */
   }
   .forecast-detail.open {
     display: block;
-    border-color: var(--accent);
-    border-top: 2px solid var(--accent);
   }
 
   .forecast-detail-header {
