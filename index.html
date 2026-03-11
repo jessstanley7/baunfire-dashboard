@@ -1082,7 +1082,8 @@
   }
   // Restore saved preference
   (function() {
-    const saved = localStorage.getItem('theme');
+    const urlTheme = new URLSearchParams(window.location.search).get('theme');
+    const saved = urlTheme || localStorage.getItem('theme');
     if (saved === 'light') {
       document.documentElement.setAttribute('data-theme', 'light');
       document.addEventListener('DOMContentLoaded', () => {
