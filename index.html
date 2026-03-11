@@ -505,9 +505,8 @@
     border-bottom-right-radius: 0;
     border-bottom: none;
     z-index: 3;
-    /* extend background down to cover the seam */
-    margin-bottom: 0;
     padding-bottom: 12px;
+    clip-path: inset(-2px -2px 0px -2px);
   }
   /* All other boxes slide behind the detail panel */
   .forecast-grid:has(.expanded) .forecast-month:not(.expanded) {
