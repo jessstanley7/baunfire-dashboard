@@ -556,14 +556,18 @@
   .forecast-detail {
     display: none;
     background: var(--surface2);
-    border: 1px solid var(--accent);
+    border: 1px solid transparent;
     border-top: none;
     border-radius: 0 0 10px 10px;
     overflow: hidden;
     grid-column: 1 / -1;
     margin-top: -1px;
   }
-  .forecast-detail.open { display: block; }
+  .forecast-detail.open {
+    display: block;
+    border-color: var(--accent);
+    border-top: 2px solid var(--accent);
+  }
 
   .forecast-detail-header {
     display: grid;
