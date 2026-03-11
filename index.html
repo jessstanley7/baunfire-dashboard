@@ -476,6 +476,7 @@
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 10px;
+    row-gap: 0;
     padding: 20px 20px 0;
   }
 
@@ -559,8 +560,8 @@
     border-top: none;
     border-radius: 0 0 10px 10px;
     overflow: hidden;
-    /* spans all 6 cols */
     grid-column: 1 / -1;
+    margin-top: -1px;
   }
   .forecast-detail.open { display: block; }
 
@@ -805,7 +806,7 @@
       <div class="forecast-grid" id="forecastGrid">
         <!-- Rendered by JS -->
       </div>
-      <div style="padding:0 20px 16px;font-size:11px;color:var(--muted);margin-top:8px">
+      <div style="padding:8px 20px 14px;font-size:11px;color:var(--muted)">
         Goal: $50K/month &nbsp;·&nbsp; <span style="color:var(--green)">■</span> Above goal &nbsp;·&nbsp; <span style="color:var(--amber)">■</span> $40–50K &nbsp;·&nbsp; <span style="color:var(--red)">■</span> Below $40K
       </div>
     </div>
