@@ -476,20 +476,32 @@
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 10px;
-    padding: 20px;
+    padding: 20px 20px 0;
   }
 
   .forecast-month {
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 14px 12px;
+    padding: 14px 12px 10px;
     text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
   }
+  .forecast-month:hover { border-color: var(--accent); }
 
   .forecast-month.current {
     border-color: var(--accent);
     background: rgba(91,127,255,0.08);
+  }
+
+  .forecast-month.expanded {
+    border-color: var(--accent);
+    background: rgba(91,127,255,0.08);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: transparent;
   }
 
   .forecast-month-label {
@@ -500,9 +512,8 @@
     margin-bottom: 8px;
   }
 
-  .forecast-month.current .forecast-month-label {
-    color: var(--accent);
-  }
+  .forecast-month.current .forecast-month-label,
+  .forecast-month.expanded .forecast-month-label { color: var(--accent); }
 
   .forecast-amount {
     font-family: 'Syne', sans-serif;
@@ -516,19 +527,79 @@
     font-size: 11px;
     color: var(--muted);
     margin-top: 4px;
+    margin-bottom: 6px;
   }
 
-  .forecast-bar {
+  /* Goal progress bar track */
+  .forecast-bar-track {
     height: 3px;
-    background: var(--accent);
+    background: rgba(128,128,128,0.15);
     border-radius: 10px;
-    margin-top: 10px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .forecast-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.4s ease;
   }
 
-  .forecast-month.current .forecast-bar {
-    background: var(--accent);
-    opacity: 1;
+  /* Chevron toggle */
+  .forecast-chevron {
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 6px; color: var(--muted); transition: transform 0.2s;
   }
+  .forecast-month.expanded .forecast-chevron { transform: rotate(180deg); color: var(--accent); }
+
+  /* Expandable invoice panel */
+  .forecast-detail {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+    /* spans all 6 cols */
+    grid-column: 1 / -1;
+  }
+  .forecast-detail.open { display: block; }
+
+  .forecast-detail-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto auto auto;
+    gap: 12px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .forecast-invoice-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto auto auto;
+    gap: 12px;
+    padding: 11px 20px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    font-size: 13px;
+    transition: background 0.1s;
+  }
+  .forecast-invoice-row:last-child { border-bottom: none; }
+  .forecast-invoice-row:hover { background: rgba(128,128,128,0.06); }
+
+  .inv-badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .inv-this-week  { background: rgba(69,224,168,0.15); color: var(--green); }
+  .inv-due-soon   { background: rgba(91,127,255,0.15); color: var(--accent); }
+  .inv-upcoming   { background: rgba(107,114,128,0.15); color: var(--muted); }
 
   /* MILESTONE TABLE */
   .milestone-row {
@@ -731,43 +802,11 @@
         <div class="card-title">Invoice Forecast — Next 6 Months</div>
         <a class="section-action" href="#">Edit milestone dates →</a>
       </div>
-      <div class="forecast-grid">
-        <div class="forecast-month current">
-          <div class="forecast-month-label">Mar 2026</div>
-          <div class="forecast-amount">$42K</div>
-          <div class="forecast-count">5 invoices</div>
-          <div class="forecast-bar" style="width:100%"></div>
-        </div>
-        <div class="forecast-month">
-          <div class="forecast-month-label">Apr 2026</div>
-          <div class="forecast-amount">$28K</div>
-          <div class="forecast-count">3 invoices</div>
-          <div class="forecast-bar" style="width:67%;background:rgba(255,255,255,0.15)"></div>
-        </div>
-        <div class="forecast-month">
-          <div class="forecast-month-label">May 2026</div>
-          <div class="forecast-amount">$65K</div>
-          <div class="forecast-count">6 invoices</div>
-          <div class="forecast-bar" style="background:var(--green)"></div>
-        </div>
-        <div class="forecast-month">
-          <div class="forecast-month-label">Jun 2026</div>
-          <div class="forecast-amount">$31K</div>
-          <div class="forecast-count">4 invoices</div>
-          <div class="forecast-bar" style="width:74%;background:rgba(255,255,255,0.15)"></div>
-        </div>
-        <div class="forecast-month">
-          <div class="forecast-month-label">Jul 2026</div>
-          <div class="forecast-amount">$18K</div>
-          <div class="forecast-count">2 invoices</div>
-          <div class="forecast-bar" style="width:43%;background:rgba(255,255,255,0.15)"></div>
-        </div>
-        <div class="forecast-month">
-          <div class="forecast-month-label">Aug 2026</div>
-          <div class="forecast-amount">$44K</div>
-          <div class="forecast-count">5 invoices</div>
-          <div class="forecast-bar" style="background:rgba(255,255,255,0.15)"></div>
-        </div>
+      <div class="forecast-grid" id="forecastGrid">
+        <!-- Rendered by JS -->
+      </div>
+      <div style="padding:0 20px 16px;font-size:11px;color:var(--muted);margin-top:8px">
+        Goal: $50K/month &nbsp;·&nbsp; <span style="color:var(--green)">■</span> Above goal &nbsp;·&nbsp; <span style="color:var(--amber)">■</span> $40–50K &nbsp;·&nbsp; <span style="color:var(--red)">■</span> Below $40K
       </div>
     </div>
 
@@ -1020,6 +1059,145 @@
   });
 
 
+
+
+  // ── Forecast data ─────────────────────────────────────────────────────────
+  const GOAL = 50000;
+  const TODAY = new Date('2026-03-11');
+
+  const FORECAST_MONTHS = [
+    { key: 'mar', label: 'Mar 2026', total: 42000, current: true, invoices: [
+      { project: 'AchillesHR — Website',   milestone: '20% — Client UAT start',     amount: 9528,  date: '2026-03-13', },
+      { project: 'Vertex — Brand Refresh',  milestone: '30% — Start of Design Sprint 1', amount: 7260, date: '2026-03-14', },
+      { project: 'Drift — Marketing Site',  milestone: '40% — Contract Execution',   amount: 32000, date: '2026-03-18', },
+      { project: 'Luminary — E-Commerce',   milestone: '10% — Kickoff',              amount: 12000, date: '2026-03-25', },
+      { project: 'Haven — Website',         milestone: '40% — Contract Execution',   amount: 36000, date: '2026-03-28', },
+    ]},
+    { key: 'apr', label: 'Apr 2026', total: 28000, invoices: [
+      { project: 'AchillesHR — Website',   milestone: '30% — Design Approval',      amount: 14292, date: '2026-04-04', },
+      { project: 'Neon — App Design',       milestone: '40% — Contract Execution',   amount: 18000, date: '2026-04-11', },
+      { project: 'Drift — Marketing Site',  milestone: '30% — Design Approval',      amount: 24000, date: '2026-04-22', },
+    ]},
+    { key: 'may', label: 'May 2026', total: 65000, invoices: [
+      { project: 'Luminary — E-Commerce',   milestone: '30% — Design Sprint 1',      amount: 36000, date: '2026-05-02', },
+      { project: 'Haven — Website',         milestone: '30% — Design Approval',      amount: 27000, date: '2026-05-09', },
+      { project: 'Vertex — Brand Refresh',  milestone: '30% — Concept Presentation', amount: 7260,  date: '2026-05-14', },
+      { project: 'AchillesHR — Website',   milestone: '20% — Dev Complete / UAT',   amount: 9528,  date: '2026-05-16', },
+      { project: 'Neon — App Design',       milestone: '30% — Design Approval',      amount: 13500, date: '2026-05-23', },
+      { project: 'Drift — Marketing Site',  milestone: '20% — Dev Complete',         amount: 16000, date: '2026-05-30', },
+    ]},
+    { key: 'jun', label: 'Jun 2026', total: 31000, invoices: [
+      { project: 'AchillesHR — Website',   milestone: '10% — Launch',               amount: 4764,  date: '2026-06-06', },
+      { project: 'Luminary — E-Commerce',   milestone: '20% — Dev Sprint 1',         amount: 24000, date: '2026-06-13', },
+      { project: 'Haven — Website',         milestone: '20% — Dev Complete',         amount: 18000, date: '2026-06-20', },
+      { project: 'Vertex — Brand Refresh',  milestone: '40% — Final Delivery',       amount: 9680,  date: '2026-06-27', },
+    ]},
+    { key: 'jul', label: 'Jul 2026', total: 18000, invoices: [
+      { project: 'Neon — App Design',       milestone: '20% — Dev Handoff',          amount: 9000,  date: '2026-07-11', },
+      { project: 'Drift — Marketing Site',  milestone: '10% — Launch',               amount: 8000,  date: '2026-07-18', },
+    ]},
+    { key: 'aug', label: 'Aug 2026', total: 44000, invoices: [
+      { project: 'Luminary — E-Commerce',   milestone: '20% — QA & Testing',         amount: 24000, date: '2026-08-01', },
+      { project: 'Haven — Website',         milestone: '10% — Launch',               amount: 9000,  date: '2026-08-08', },
+      { project: 'Neon — App Design',       milestone: '10% — Launch',               amount: 4500,  date: '2026-08-15', },
+      { project: 'AchillesHR — Website',   milestone: 'Retainer — Month 1',          amount: 3500,  date: '2026-08-22', },
+      { project: 'Luminary — E-Commerce',   milestone: '10% — Final Delivery & Launch', amount: 12000, date: '2026-08-29', },
+    ]},
+  ];
+
+  function goalBar(total) {
+    if (total >= GOAL) {
+      return { color: 'var(--green)', width: '100%' };
+    } else if (total >= 40000) {
+      return { color: 'var(--amber)', width: '75%' };
+    } else if (total >= 20000) {
+      return { color: 'var(--red)', width: '50%' };
+    } else {
+      return { color: 'var(--red)', width: '25%' };
+    }
+  }
+
+  function invoiceStatus(dateStr) {
+    const d = new Date(dateStr);
+    const diffDays = Math.round((d - TODAY) / 86400000);
+    if (diffDays <= 7)  return { label: 'This week', cls: 'inv-this-week' };
+    if (diffDays <= 31) return { label: 'Due soon',  cls: 'inv-due-soon' };
+    return { label: 'Upcoming', cls: 'inv-upcoming' };
+  }
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function formatAmt(n) {
+    return '$' + n.toLocaleString();
+  }
+
+  let expandedMonth = null;
+
+  function renderForecast() {
+    const grid = document.getElementById('forecastGrid');
+    if (!grid) return;
+
+    let html = '';
+    FORECAST_MONTHS.forEach((m, i) => {
+      const bar = goalBar(m.total);
+      const isCurrent = m.current ? ' current' : '';
+      const isExp = expandedMonth === m.key ? ' expanded' : '';
+      html += `<div class="forecast-month${isCurrent}${isExp}" onclick="toggleForecast('${m.key}')">
+        <div class="forecast-month-label">${m.label}</div>
+        <div class="forecast-amount">$${(m.total/1000).toFixed(0)}K</div>
+        <div class="forecast-count">${m.invoices.length} invoices</div>
+        <div class="forecast-bar-track">
+          <div class="forecast-bar-fill" style="width:${bar.width};background:${bar.color}"></div>
+        </div>
+        <div class="forecast-chevron">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </div>`;
+    });
+
+    // Detail panel — always last, spans full width
+    FORECAST_MONTHS.forEach(m => {
+      const isOpen = expandedMonth === m.key ? ' open' : '';
+      let rows = '';
+      m.invoices.forEach(inv => {
+        const st = invoiceStatus(inv.date);
+        rows += `<div class="forecast-invoice-row">
+          <div style="font-weight:500;color:var(--text)">${inv.project}</div>
+          <div style="color:var(--muted);font-size:12px">${inv.milestone}</div>
+          <div style="font-weight:600;color:var(--text);text-align:right">${formatAmt(inv.amount)}</div>
+          <div style="color:var(--muted);font-size:12px;white-space:nowrap">${formatDate(inv.date)}</div>
+          <div><span class="inv-badge ${st.cls}">${st.label}</span></div>
+        </div>`;
+      });
+      const total = m.invoices.reduce((s, i) => s + i.amount, 0);
+      html += `<div class="forecast-detail${isOpen}" id="detail-${m.key}">
+        <div class="forecast-detail-header">
+          <div>Project</div><div>Milestone</div>
+          <div style="text-align:right">Amount</div>
+          <div>Date</div><div>Status</div>
+        </div>
+        ${rows}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-top:1px solid var(--border);background:rgba(128,128,128,0.04)">
+          <span style="font-size:12px;color:var(--muted)">Total for ${m.label}</span>
+          <span style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text)">${formatAmt(total)}</span>
+        </div>
+      </div>`;
+    });
+
+    grid.innerHTML = html;
+  }
+
+  function toggleForecast(key) {
+    expandedMonth = expandedMonth === key ? null : key;
+    renderForecast();
+  }
+
+  document.addEventListener('DOMContentLoaded', renderForecast);
 
   // ── Project data ──────────────────────────────────────────────────────────
   const PROJECT_DATA = {
