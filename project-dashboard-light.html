@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agency Project Dashboard — Light</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f0f2f7;
+    --surface: #ffffff;
+    --surface2: #f5f7fb;
+    --border: rgba(0,0,0,0.08);
+    --accent: #3b5fe2;
+    --accent2: #e03e3e;
+    --accent3: #12b07a;
+    --accent4: #d4920a;
+    --text: #111827;
+    --muted: #6b7280;
+    --red: #dc2626;
+    --amber: #d4920a;
+    --green: #12b07a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    overflow-x: hidden;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 220px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-mark {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .nav {
+    padding: 16px 12px;
+    flex: 1;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    padding: 0 8px;
+    margin-bottom: 6px;
+    margin-top: 16px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.15s;
+    font-size: 13.5px;
+    font-weight: 400;
+  }
+
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: rgba(91,127,255,0.12); color: var(--accent); font-weight: 500; }
+
+  .nav-icon { width: 16px; height: 16px; opacity: 0.9; }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--accent2);
+    color: var(--text);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 20px;
+  }
+
+  /* MAIN */
+  .main {
+    margin-left: 220px;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(10px);
+  }
+
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .period-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--text);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+
+  .content {
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* STAT CARDS */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-color, var(--accent));
+    border-radius: 14px 14px 0 0;
+  }
+
+  .stat-card.green { --accent-color: var(--green); }
+  .stat-card.amber { --accent-color: var(--amber); }
+  .stat-card.red { --accent-color: var(--red); }
+
+  .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  .stat-sub {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge-green { background: rgba(69,224,168,0.12); color: var(--green); }
+  .badge-red { background: rgba(255,77,77,0.12); color: var(--red); }
+  .badge-amber { background: rgba(247,183,49,0.12); color: var(--amber); }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .section-action {
+    font-size: 12px;
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  /* PROJECT TABLE */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    padding: 11px 20px;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0,0,0,0.02);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+
+  td {
+    padding: 14px 20px;
+    vertical-align: middle;
+  }
+
+  .project-name {
+    font-weight: 500;
+    color: var(--text);
+    font-size: 13.5px;
+  }
+
+  .project-client {
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .budget-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .budget-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .budget-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.6s ease;
+  }
+
+  .bar-green { background: var(--green); }
+  .bar-amber { background: var(--amber); }
+  .bar-red { background: var(--red); }
+
+  .budget-pct {
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 34px;
+    text-align: right;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+
+  /* TWO COL */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* PHASE BREAKDOWN */
+  .phase-row {
+    display: flex;
+    align-items: center;
+    padding: 11px 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+
+  .phase-row:last-child { border-bottom: none; }
+
+  .phase-name {
+    font-size: 13px;
+    color: var(--text);
+    min-width: 160px;
+  }
+
+  .phase-amounts {
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 120px;
+  }
+
+  .phase-bar-bg {
+    flex: 1;
+    height: 7px;
+    background: rgba(0,0,0,0.06);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .phase-pct {
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 38px;
+    text-align: right;
+  }
+
+  /* INVOICE FORECAST */
+  .forecast-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    padding: 20px;
+  }
+
+  .forecast-month {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+
+  .forecast-month.current {
+    border-color: var(--accent);
+    background: rgba(91,127,255,0.08);
+  }
+
+  .forecast-month-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .forecast-month.current .forecast-month-label {
+    color: var(--accent);
+  }
+
+  .forecast-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+
+  .forecast-count {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .forecast-bar {
+    height: 3px;
+    background: var(--accent);
+    border-radius: 10px;
+    margin-top: 10px;
+  }
+
+  .forecast-month.current .forecast-bar {
+    background: var(--accent);
+    opacity: 1;
+  }
+
+  /* MILESTONE TABLE */
+  .milestone-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+  }
+
+  .milestone-row:last-child { border-bottom: none; }
+
+  .milestone-project {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    min-width: 160px;
+  }
+
+  .milestone-phase {
+    font-size: 12px;
+    color: var(--muted);
+    flex: 1;
+  }
+
+  .milestone-amount {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    min-width: 80px;
+    text-align: right;
+  }
+
+  .milestone-date {
+    font-size: 12px;
+    min-width: 90px;
+    text-align: right;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .pill-invoiced { background: rgba(69,224,168,0.12); color: var(--green); }
+  .pill-upcoming { background: rgba(91,127,255,0.12); color: var(--accent); }
+  .pill-overdue { background: rgba(255,77,77,0.12); color: var(--red); }
+  .pill-pending { background: rgba(247,183,49,0.12); color: var(--amber); }
+
+  .chart-wrap {
+    padding: 16px 20px 20px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+    font-weight: 400;
+  }
+
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 500;
+  }
+
+  .avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+  }
+
+  .health-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+  }
+
+  .three-col { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+
+  .invoiced-strip {
+    display: flex;
+    gap: 0;
+    height: 8px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">Agency HQ</div>
+    <div class="logo-sub">Project Intelligence</div>
+  </div>
+  <div class="nav">
+    <div class="nav-label">Overview</div>
+    <div class="nav-item active">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
+      All Projects
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Finance
+      <span class="nav-badge">3</span>
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Invoices
+    </div>
+    <div class="nav-label">Planning</div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      Milestones
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      Forecast
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title">Project Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <select class="period-select">
+        <option>Mar 2026</option>
+        <option>Feb 2026</option>
+        <option>Q1 2026</option>
+      </select>
+      <a href="project-dashboard-achilles.html" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:500;text-decoration:none;margin-right:8px">🌙 Dark mode</a><button class="btn-primary">+ Add Project</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- STAT CARDS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Active Budget</div>
+        <div class="stat-value">$412K</div>
+        <div class="stat-sub"><span class="stat-badge badge-amber">↑ 73% used</span> across 8 projects</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Invoiced to Date</div>
+        <div class="stat-value">$218K</div>
+        <div class="stat-sub"><span class="stat-badge badge-green">✓ On track</span> vs $194K target</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-label">Outstanding to Invoice</div>
+        <div class="stat-value">$94K</div>
+        <div class="stat-sub"><span class="stat-badge badge-amber">4 milestones</span> due this month</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">Over Budget Projects</div>
+        <div class="stat-value">2</div>
+        <div class="stat-sub"><span class="stat-badge badge-red">↑ 141%</span> worst offender</div>
+      </div>
+    </div>
+
+    <!-- INVOICE FORECAST -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Invoice Forecast — Next 6 Months</div>
+        <a class="section-action" href="#">Edit milestone dates →</a>
+      </div>
+      <div class="forecast-grid">
+        <div class="forecast-month current">
+          <div class="forecast-month-label">Mar 2026</div>
+          <div class="forecast-amount">$42K</div>
+          <div class="forecast-count">5 invoices</div>
+          <div class="forecast-bar" style="width:100%"></div>
+        </div>
+        <div class="forecast-month">
+          <div class="forecast-month-label">Apr 2026</div>
+          <div class="forecast-amount">$28K</div>
+          <div class="forecast-count">3 invoices</div>
+          <div class="forecast-bar" style="width:67%;background:rgba(0,0,0,0.08)"></div>
+        </div>
+        <div class="forecast-month">
+          <div class="forecast-month-label">May 2026</div>
+          <div class="forecast-amount">$65K</div>
+          <div class="forecast-count">6 invoices</div>
+          <div class="forecast-bar" style="background:var(--green)"></div>
+        </div>
+        <div class="forecast-month">
+          <div class="forecast-month-label">Jun 2026</div>
+          <div class="forecast-amount">$31K</div>
+          <div class="forecast-count">4 invoices</div>
+          <div class="forecast-bar" style="width:74%;background:rgba(0,0,0,0.08)"></div>
+        </div>
+        <div class="forecast-month">
+          <div class="forecast-month-label">Jul 2026</div>
+          <div class="forecast-amount">$18K</div>
+          <div class="forecast-count">2 invoices</div>
+          <div class="forecast-bar" style="width:43%;background:rgba(0,0,0,0.08)"></div>
+        </div>
+        <div class="forecast-month">
+          <div class="forecast-month-label">Aug 2026</div>
+          <div class="forecast-amount">$44K</div>
+          <div class="forecast-count">5 invoices</div>
+          <div class="forecast-bar" style="background:rgba(0,0,0,0.08)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECTS TABLE + PHASE BREAKDOWN -->
+    <div class="three-col">
+
+      <!-- PROJECT TABLE -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">All Projects — Budget Health</div>
+          <a class="section-action" href="#">Export ↗</a>
+        </div>
+        <div class="tabs">
+          <div class="tab active">All (8)</div>
+          <div class="tab">At Risk (2)</div>
+          <div class="tab">On Track (6)</div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Budget Used</th>
+              <th>Budget</th>
+              <th>Invoiced</th>
+              <th>Health</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="project-name">AchillesHR — Website</div>
+                <div class="project-client">AchillesHR</div>
+              </td>
+              <td>
+                <div class="budget-bar-wrap">
+                  <div class="budget-bar-bg"><div class="budget-bar-fill bar-green" style="width:42%"></div></div>
+                  <span class="budget-pct" style="color:var(--green)">42%</span>
+                </div>
+                <div style="font-size:11px;color:var(--muted);margin-top:3px">$20.3K of $47.6K</div>
+              </td>
+              <td><span style="font-size:13px;font-weight:500">$47.6K</span></td>
+              <td><span class="pill pill-invoiced">$19.1K</span></td>
+              <td>
+                <div class="health-indicator">
+                  <span class="status-dot" style="background:var(--green)"></span>
+                  <span style="color:var(--green);font-size:12px">Good</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="project-name">Vertex — Brand Refresh</div>
+                <div class="project-client">Vertex Systems</div>
+              </td>
+              <td>
+                <div class="budget-bar-wrap">
+                  <div class="budget-bar-bg"><div class="budget-bar-fill bar-red" style="width:100%"></div></div>
+                  <span class="budget-pct" style="color:var(--red)">141%</span>
+                </div>
+                <div style="font-size:11px;color:var(--muted);margin-top:3px">$34.1K of $24.2K</div>
+              </td>
+              <td><span style="font-size:13px;font-weight:500">$24.2K</span></td>
+              <td><span class="pill pill-invoiced">$19.4K</span></td>
+              <td>
+                <div class="health-indicator">
+                  <span class="status-dot" style="background:var(--red)"></span>
+                  <span style="color:var(--red);font-size:12px">Over</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="project-name">Luminary — E-Commerce</div>
+                <div class="project-client">Luminary Co.</div>
+              </td>
+              <td>
+                <div class="budget-bar-wrap">
+                  <div class="budget-bar-bg"><div class="budget-bar-fill bar-green" style="width:42%"></div></div>
+                  <span class="budget-pct" style="color:var(--green)">42%</span>
+                </div>
+                <div style="font-size:11px;color:var(--muted);margin-top:3px">$50.4K of $120K</div>
+              </td>
+              <td><span style="font-size:13px;font-weight:500">$120K</span></td>
+              <td><span class="pill pill-invoiced">$48K</span></td>
+              <td>
+                <div class="health-indicator">
+                  <span class="status-dot" style="background:var(--green)"></span>
+                  <span style="color:var(--green);font-size:12px">Good</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="project-name">Drift — Marketing Site</div>
+                <div class="project-client">Drift Labs</div>
+              </td>
+              <td>
+                <div class="budget-bar-wrap">
+                  <div class="budget-bar-bg"><div class="budget-bar-fill bar-green" style="width:58%"></div></div>
+                  <span class="budget-pct" style="color:var(--green)">58%</span>
+                </div>
+                <div style="font-size:11px;color:var(--muted);margin-top:3px">$46.4K of $80K</div>
+              </td>
+              <td><span style="font-size:13px;font-weight:500">$80K</span></td>
+              <td><span class="pill pill-invoiced">$32K</span></td>
+              <td>
+                <div class="health-indicator">
+                  <span class="status-dot" style="background:var(--green)"></span>
+                  <span style="color:var(--green);font-size:12px">Good</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="project-name">Neon — App Design</div>
+                <div class="project-client">Neon Digital</div>
+              </td>
+              <td>
+                <div class="budget-bar-wrap">
+                  <div class="budget-bar-bg"><div class="budget-bar-fill bar-red" style="width:100%"></div></div>
+                  <span class="budget-pct" style="color:var(--red)">109%</span>
+                </div>
+                <div style="font-size:11px;color:var(--muted);margin-top:3px">$49.1K of $45K</div>
+              </td>
+              <td><span style="font-size:13px;font-weight:500">$45K</span></td>
+              <td><span class="pill pill-invoiced">$36K</span></td>
+              <td>
+                <div class="health-indicator">
+                  <span class="status-dot" style="background:var(--red)"></span>
+                  <span style="color:var(--red);font-size:12px">Over</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="project-name">Haven — Website</div>
+                <div class="project-client">Haven Wellness</div>
+              </td>
+              <td>
+                <div class="budget-bar-wrap">
+                  <div class="budget-bar-bg"><div class="budget-bar-fill bar-green" style="width:31%"></div></div>
+                  <span class="budget-pct" style="color:var(--green)">31%</span>
+                </div>
+                <div style="font-size:11px;color:var(--muted);margin-top:3px">$27.9K of $90K</div>
+              </td>
+              <td><span style="font-size:13px;font-weight:500">$90K</span></td>
+              <td><span class="pill pill-invoiced">$36K</span></td>
+              <td>
+                <div class="health-indicator">
+                  <span class="status-dot" style="background:var(--green)"></span>
+                  <span style="color:var(--green);font-size:12px">Good</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- RIGHT COL: PHASE BREAKDOWN -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">AchillesHR — Phase Budget</div>
+            <a class="section-action" href="#">All phases →</a>
+          </div>
+          <div class="phase-row">
+            <div class="phase-name">Discovery & Define</div>
+            <div style="flex:1">
+              <div class="budget-bar-bg" style="height:6px;border-radius:4px;overflow:hidden;background:rgba(0,0,0,0.06)">
+                <div class="budget-bar-fill bar-amber" style="width:57%"></div>
+              </div>
+            </div>
+            <div class="phase-pct" style="color:var(--amber)">57%</div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-name">Strategy & Foundation</div>
+            <div style="flex:1">
+              <div class="budget-bar-bg" style="height:6px;border-radius:4px;overflow:hidden;background:rgba(0,0,0,0.06)">
+                <div class="budget-bar-fill bar-amber" style="width:69%"></div>
+              </div>
+            </div>
+            <div class="phase-pct" style="color:var(--amber)">69%</div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-name">Create</div>
+            <div style="flex:1">
+              <div class="budget-bar-bg" style="height:6px;border-radius:4px;overflow:hidden;background:rgba(0,0,0,0.06)">
+                <div class="budget-bar-fill bar-amber" style="width:50%"></div>
+              </div>
+            </div>
+            <div class="phase-pct" style="color:var(--amber)">50%</div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-name">Build & Launch</div>
+            <div style="flex:1">
+              <div class="budget-bar-bg" style="height:6px;border-radius:4px;overflow:hidden;background:rgba(0,0,0,0.06)">
+                <div class="budget-bar-fill bar-green" style="width:32%"></div>
+              </div>
+            </div>
+            <div class="phase-pct" style="color:var(--green)">32%</div>
+          </div>
+          <div class="phase-row">
+            <div class="phase-name">Copywriting</div>
+            <div style="flex:1">
+              <div class="budget-bar-bg" style="height:6px;border-radius:4px;overflow:hidden;background:rgba(0,0,0,0.06)">
+                <div class="budget-bar-fill bar-green" style="width:10%"></div>
+              </div>
+            </div>
+            <div class="phase-pct" style="color:var(--green)">9%</div>
+          </div>
+        </div>
+
+        <!-- PROFIT SNAPSHOT -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">AchillesHR — Profitability</div>
+          </div>
+          <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:12px;color:var(--muted)">Profit to date</span>
+              <div style="text-align:right">
+                <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text)">$27,291</div>
+                <div style="font-size:11px;color:var(--muted)">Target $14,292</div>
+              </div>
+            </div>
+            <div style="height:1px;background:var(--border)"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:12px;color:var(--muted)">Profit margin</span>
+              <div style="text-align:right">
+                <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--accent2)">57.29%</div>
+                <div style="font-size:11px;color:var(--muted)">Target 30%</div>
+              </div>
+            </div>
+            <div style="height:1px;background:var(--border)"></div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px">
+                <span>Margin progress</span><span>57% vs 30% target</span>
+              </div>
+              <div style="height:8px;background:rgba(0,0,0,0.06);border-radius:10px;overflow:hidden">
+                <div style="width:100%;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:10px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MILESTONE TRACKER -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Billing Milestones — Upcoming & Status</div>
+        <a class="section-action" href="#">+ Add milestone</a>
+      </div>
+      <div class="tabs">
+        <div class="tab active">All</div>
+        <div class="tab">Invoiced</div>
+        <div class="tab">Upcoming</div>
+        <div class="tab">Overdue</div>
+      </div>
+
+      <div class="milestone-row" style="background:rgba(255,77,77,0.04)">
+        <div class="milestone-project">Vertex — Brand</div>
+        <div class="milestone-phase">30% — Start of Design Sprint 1</div>
+        <div class="milestone-amount">$7,260</div>
+        <div class="milestone-date" style="color:var(--red)">Feb 14, 2026</div>
+        <span class="pill pill-overdue">Overdue</span>
+      </div>
+      <div class="milestone-row">
+        <div class="milestone-project">AchillesHR — Website</div>
+        <div class="milestone-phase">20% — Client UAT start</div>
+        <div class="milestone-amount">$9,528</div>
+        <div class="milestone-date" style="color:var(--accent)">Mar 28, 2026</div>
+        <span class="pill pill-upcoming">Due soon</span>
+      </div>
+      <div class="milestone-row">
+        <div class="milestone-project">Luminary — E-Commerce</div>
+        <div class="milestone-phase">30% — Design Sprint 1</div>
+        <div class="milestone-amount">$36,000</div>
+        <div class="milestone-date" style="color:var(--accent)">Mar 18, 2026</div>
+        <span class="pill pill-upcoming">Upcoming</span>
+      </div>
+      <div class="milestone-row">
+        <div class="milestone-project">Drift — Marketing</div>
+        <div class="milestone-phase">40% — Contract execution</div>
+        <div class="milestone-amount">$32,000</div>
+        <div class="milestone-date" style="color:var(--green)">Jan 20, 2026</div>
+        <span class="pill pill-invoiced">Invoiced</span>
+      </div>
+      <div class="milestone-row">
+        <div class="milestone-project">Haven — Website</div>
+        <div class="milestone-phase">40% — Contract execution</div>
+        <div class="milestone-amount">$36,000</div>
+        <div class="milestone-date" style="color:var(--green)">Dec 1, 2025</div>
+        <span class="pill pill-invoiced">Invoiced</span>
+      </div>
+      <div class="milestone-row">
+        <div class="milestone-project">Neon — App Design</div>
+        <div class="milestone-phase">10% — Project completion</div>
+        <div class="milestone-amount">$4,500</div>
+        <div class="milestone-date" style="color:var(--amber)">Mar 28, 2026</div>
+        <span class="pill pill-pending">PM review</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  // Tab interactivity
+  document.querySelectorAll('.tabs').forEach(tabGroup => {
+    tabGroup.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+  });
+
+  // Nav interactivity
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
